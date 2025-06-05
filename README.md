@@ -40,21 +40,22 @@ This project is a React-based e-commerce application that showcases a product ca
 4. Open `http://localhost:3000` in your browser.
 
 ## Project Structure
-src/
-├── components/
-│   ├── CategoryFilter.jsx
-│   └── ProductCard.jsx
-├── features/
-│   └── cart/
-│       ├── cartSlice.js
-├── pages/
-│   ├── Home.jsx
-│   ├── ShoppingCart.jsx
-│   └── Checkout.jsx
-├── utils/
-│   └── sessionStorage.js
-├── App.jsx
-└── main.jsx
+- src/
+  - components/
+    - CategoryFilter.jsx
+    - ProductCard.jsx
+  - features/
+    - cart/
+      - cartSlice.js
+  - pages/
+    - Home.jsx
+    - ShoppingCart.jsx
+    - Checkout.jsx
+  - utils/
+    - sessionStorage.js
+  - App.jsx
+  - main.jsx
+
 
 ## 🔥 Deployment Suggestions
 
