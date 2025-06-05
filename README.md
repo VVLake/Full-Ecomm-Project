@@ -75,5 +75,5 @@ Thank you for checking out the project!
 
 ---
 
-Author: Valeria Lake [Linkedin:](www.linkedin.com/in/valerialake95)
+Author: Valeria Lake [LinkedIn](www.linkedin.com/in/valerialake95)
 
