@@ -72,3 +72,8 @@ Ensure the homepage field is added to your package.json if using GitHub Pages
 ---
 
 Thank you for checking out the project!
+
+---
+
+Author: Valeria Lake [Linkedin:] (www.linkedin.com/in/valerialake95)
+
