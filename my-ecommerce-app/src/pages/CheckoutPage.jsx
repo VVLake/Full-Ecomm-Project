@@ -1,32 +1,73 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from '../features/cart/cartSlice';
 import { useNavigate } from 'react-router-dom';
+import { placeOrder } from '../utils/orderService';  // import order service
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebaseConfig';
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const cartItems = useSelector(state => state.cart.items); // get cart items from redux
+  const [user] = useAuthState(auth);  // get current logged in user
+
   const [formData, setFormData] = useState({
     name: '',
     cardNumber: '',
     expiration: '',
     cvv: '',
   });
+
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(clearCart());
-    sessionStorage.removeItem('cart');
-    setSuccess(true);
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+
+    if (!user) {
+      setError('You must be logged in to place an order.');
+      return;
+    }
+    if (cartItems.length === 0) {
+      setError('Your cart is empty.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Build order data without createdAt; placeOrder adds timestamp
+      const orderData = {
+        userId: user.uid,
+        userEmail: user.email,
+        products: cartItems,
+        totalPrice: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      };
+
+      await placeOrder(orderData);
+
+      dispatch(clearCart());
+      sessionStorage.removeItem('cart');
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+
+    } catch (err) {
+      setError('Failed to place order. Please try again.');
+      console.error('Order placement error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -45,6 +86,9 @@ const CheckoutPage = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Enter Payment Details</h2>
+
+      {error && <div style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
+
       <form onSubmit={handleSubmit} style={styles.form}>
         {[
           { label: 'Name on Card', name: 'name', type: 'text' },
@@ -68,18 +112,26 @@ const CheckoutPage = () => {
           </div>
         ))}
 
-        <button type="submit" style={styles.payButton}>
-          Pay Now
+        <button
+          type="submit"
+          style={{
+            ...styles.payButton,
+            opacity: loading ? 0.6 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : 'Pay Now'}
         </button>
       </form>
 
       <div style={styles.cancelButtonContainer}>
-      <button
-        onClick={handleCancel}
-        style={{ marginTop: '1rem', width: '100%', padding: '0.75rem', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem' }}
-      >
-        Cancel and Go Back to Home
-      </button>
+        <button
+          onClick={handleCancel}
+          style={{ marginTop: '1rem', width: '100%', padding: '0.75rem', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem' }}
+        >
+          Cancel and Go Back to Home
+        </button>
       </div>
     </div>
   );
@@ -140,18 +192,6 @@ const styles = {
   cancelButtonContainer: {
     marginTop: '1.5rem',
     textAlign: 'center',
-  },
-  cancelButton: {
-    padding: '0.75rem 2rem',
-    backgroundColor: '#e74c3c',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontWeight: '700',
-    fontSize: '1rem',
-    cursor: 'pointer',
-    boxShadow: '0 4px 12px rgba(231,76,60,0.6)',
-    transition: 'background-color 0.3s ease',
   },
   successContainer: {
     marginTop: '4rem',

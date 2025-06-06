@@ -6,6 +6,9 @@ import viteLogo from '/vite.svg';
 import Home from './pages/Home';
 import ShoppingCart from './components/ShoppingCart';
 import CheckoutPage from './pages/CheckoutPage';
+import AuthForm from './components/AuthForm';
+import Profile from './pages/Profile';
+import OrderHistory from './components/OrderHistory'; // Import OrderHistory
 import { saveCartToSession } from './utils/sessionStorage';
 import './App.css';
 
@@ -33,6 +36,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/auth" element={<AuthForm />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/order-history" element={<OrderHistory />} /> {/* Add OrderHistory route */}
           </Routes>
         </main>
         <aside>
