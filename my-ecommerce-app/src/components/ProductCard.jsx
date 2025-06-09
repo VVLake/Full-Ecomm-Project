@@ -1,31 +1,34 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// src/components/__tests__/ProductCard.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import ProductCard from '../ProductCard';
 
-const ProductCard = ({ product, onAddToCart }) => {
-  return (
-    <div style={{ border: '1px solid #ccc', padding: '1rem', width: '250px' }}>
-      <img
-        src={product.image || 'placeholder-image-url.jpg'}
-        alt={product.title || 'No title available'}
-        style={{ width: '100%', height: '200px', objectFit: 'contain' }}
-      />
-      <h3>{product.title || 'No title available'}</h3>
-      <p><strong>Price:</strong> ${product.price !== undefined ? product.price : 'N/A'}</p>
-      <p><strong>Category:</strong> {product.category || 'N/A'}</p>
-      <p style={{ height: '60px', overflow: 'hidden' }}>
-        {product.description || 'No description available'}
-      </p>
-      <p>
-        <strong>Rating:</strong> {product.rating?.rate !== undefined ? product.rating.rate : 'N/A'} ({product.rating?.count || 0} reviews)
-      </p>
-      <button onClick={() => onAddToCart(product)}>Add to Cart</button>
-    </div>
-  );
+const mockProduct = {
+  id: '1',
+  title: 'Test Product',
+  price: 19.99,
+  category: 'Test Category',
+  description: 'This is a test product',
+  image: 'test.jpg',
+  rating: { rate: 4.5, count: 20 },
 };
 
-ProductCard.propTypes = {
-  product: PropTypes.object.isRequired,
-  onAddToCart: PropTypes.func.isRequired,
-};
+test('renders product details and calls onAddToCart', () => {
+  const mockAddToCart = jest.fn();
 
-export default ProductCard;
+  render(<ProductCard product={mockProduct} onAddToCart={mockAddToCart} />);
+
+  // Check for product content
+  expect(screen.getByText(/test product/i)).toBeInTheDocument();
+  expect(screen.getByText(/\$19.99/)).toBeInTheDocument();
+  expect(screen.getByText(/test category/i)).toBeInTheDocument();
+  expect(screen.getByText(/this is a test product/i)).toBeInTheDocument();
+  expect(screen.getByText(/4.5/i)).toBeInTheDocument();
+
+  // Simulate clicking "Add to Cart"
+  const addButton = screen.getByRole('button', { name: /add to cart/i });
+  fireEvent.click(addButton);
+
+  // Assert the callback was called with the correct product
+  expect(mockAddToCart).toHaveBeenCalledTimes(1);
+  expect(mockAddToCart).toHaveBeenCalledWith(mockProduct);
+});
