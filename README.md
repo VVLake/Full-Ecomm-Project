@@ -1,4 +1,4 @@
-# React Firebase E-commerce App
+# React E-commerce App
 
 A full-stack e-commerce web application built with React, Redux Toolkit, and Firebase (Authentication & Firestore).  
 This app allows users to browse products, manage their cart, register/login, place orders, and view order history. Admin users can manage products with full CRUD operations.
@@ -79,6 +79,9 @@ Available Scripts
 - npm run preview – Preview production build locally
 
 -- 
+
+## Deployed Website
+(https://full-ecomm-project-i581.vercel.app/)
 
 Thank you for checking out the project! 
 
